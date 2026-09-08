@@ -117,6 +117,29 @@ public class BoletaService {
         logger.info("Boleta enviada por email a {}", destino);
     }
 
+    public void enviarBoletaDePrueba(Long clienteId) {
+        Cliente cliente = clienteRepository.findById(clienteId).orElse(null);
+        if (cliente == null || cliente.getEmail() == null || cliente.getEmail().isBlank()) {
+            logger.warn("No se puede enviar boleta de prueba: cliente o email faltante (id={})", clienteId);
+            return;
+        }
+        Boleta boleta = new Boleta();
+        boleta.setCliente(cliente);
+        ItemCarrito item = new ItemCarrito(null, 1L, "Producto de prueba", 1, 1000.0, "39");
+        boleta.setItems(List.of(item));
+        boleta.setImpuestos(0.0);
+        boleta.setMetodoPago("Efectivo");
+        boleta.setDireccion("Direccion de prueba");
+        boleta.setFecha(LocalDateTime.now());
+        boleta.setEstado("CREADA");
+        boleta.calcularTotal();
+        try {
+            enviarBoletaPorEmail(boleta);
+        } catch (Exception ex) {
+            logger.error("Error enviando boleta de prueba", ex);
+        }
+    }
+
     public List<Boleta> listarPorCliente(Long clienteId) {
         return boletaRepository.findByClienteId(clienteId);
     }

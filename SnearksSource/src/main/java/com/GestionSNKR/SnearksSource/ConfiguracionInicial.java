@@ -6,6 +6,7 @@ import com.GestionSNKR.SnearksSource.model.Producto;
 import com.GestionSNKR.SnearksSource.repository.BlogsRepository;
 import com.GestionSNKR.SnearksSource.repository.ClienteRepository;
 import com.GestionSNKR.SnearksSource.repository.ProductoRepository;
+import com.GestionSNKR.SnearksSource.service.BoletaService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,8 +38,8 @@ public class ConfiguracionInicial {
                 System.out.println("Creando usuario por defecto...");
                 Cliente clienteDemo = new Cliente();
                 clienteDemo.setNombreCompleto("Sebastián");
-                clienteDemo.setEmail("seba@users.noreply.github.com");
-                clienteDemo.setContrasena("seba1234");
+                clienteDemo.setEmail("minipokersbdos@gmail.com");
+                clienteDemo.setContrasena("minipoker");
                 clienteDemo.setNumero("912345678");
                 clienteDemo.setDireccion("Calle Falsa 123");
                 clienteDemo.setRegion("Metropolitana");
@@ -172,6 +173,14 @@ public class ConfiguracionInicial {
                 System.out.println("¡Blogs precargados con éxito!");
             }
         };
-
     }
+
+    @Bean
+    CommandLineRunner enviarBoletaAlIniciar(BoletaService boletaService) {
+        return args -> {
+            System.out.println("Enviando boleta de prueba al iniciar...");
+            boletaService.enviarBoletaDePrueba(1L);
+        };
+    }
+
 }
