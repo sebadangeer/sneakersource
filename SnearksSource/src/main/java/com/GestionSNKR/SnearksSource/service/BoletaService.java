@@ -10,6 +10,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.GestionSNKR.SnearksSource.model.ItemCarrito;
 import jakarta.mail.internet.MimeMessage;
@@ -24,6 +27,11 @@ public class BoletaService {
     private final CarritoRepository carritoRepository;
     private final ClienteRepository clienteRepository;
     private final JavaMailSender mailSender;
+
+    private static final Logger logger = LoggerFactory.getLogger(BoletaService.class);
+
+    @Value("${spring.mail.username}")
+    private String mailFrom;
 
     public BoletaService(BoletaRepository boletaRepository, CarritoRepository carritoRepository, ClienteRepository clienteRepository, JavaMailSender mailSender) {
         this.boletaRepository = boletaRepository;
@@ -75,7 +83,7 @@ public class BoletaService {
         try {
             enviarBoletaPorEmail(boleta);
         } catch (Exception ex) {
-            System.err.println("Error enviando boleta por email: " + ex.getMessage());
+            logger.error("Error enviando boleta por email", ex);
         }
     }
 
@@ -84,7 +92,7 @@ public class BoletaService {
         MimeMessage msg = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(msg, true, "UTF-8");
         helper.setTo(destino);
-        helper.setFrom("no-reply@snearks.com");
+        helper.setFrom(mailFrom);
         helper.setSubject("Tu boleta - Pedido #" + boleta.getId());
 
         StringBuilder html = new StringBuilder();
@@ -106,6 +114,7 @@ public class BoletaService {
 
         helper.setText(html.toString(), true);
         mailSender.send(msg);
+        logger.info("Boleta enviada por email a {}", destino);
     }
 
     public List<Boleta> listarPorCliente(Long clienteId) {
