@@ -7,7 +7,7 @@ WORKDIR /workspace
 COPY . .
 
 # Compilación usando el comando gradle nativo
-RUN gradle bootJar -x test --no-daemon
+RUN chmod +x gradlew && ./gradlew bootJar -x test --no-daemon
 
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
