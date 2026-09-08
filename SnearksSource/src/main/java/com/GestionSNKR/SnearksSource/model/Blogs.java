@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
         @Column(name = "descripcion_post", length = 100)
         private String descripcion_post;
 
-        @Column(name = "contenido_post", length = 500)
+        @Column(name = "contenido_post", length = 2000)
         private String contenido_post;
 
         @Column(name = "link_imagen_post", length = 250)

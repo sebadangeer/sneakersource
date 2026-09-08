@@ -3,17 +3,16 @@
 FROM gradle:8.10.2-jdk21 AS builder
 WORKDIR /workspace
 
-COPY gradlew gradlew
-COPY gradle gradle
-COPY build.gradle settings.gradle ./
-COPY src src
+# Copia directa de archivos
+COPY . .
 
-RUN chmod +x gradlew
-RUN ./gradlew --no-daemon clean bootJar
+# Compilación usando el comando gradle nativo
+RUN gradle bootJar -x test --no-daemon
 
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
+# Copia el JAR generado
 COPY --from=builder /workspace/build/libs/*.jar /app/app.jar
 
 EXPOSE 8080

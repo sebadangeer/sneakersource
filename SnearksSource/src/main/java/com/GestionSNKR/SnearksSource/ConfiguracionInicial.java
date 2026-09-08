@@ -1,8 +1,10 @@
 package com.GestionSNKR.SnearksSource; // Ajusta el paquete si lo moviste a config
 
 import com.GestionSNKR.SnearksSource.model.Blogs;
+import com.GestionSNKR.SnearksSource.model.Cliente;
 import com.GestionSNKR.SnearksSource.model.Producto;
 import com.GestionSNKR.SnearksSource.repository.BlogsRepository;
+import com.GestionSNKR.SnearksSource.repository.ClienteRepository;
 import com.GestionSNKR.SnearksSource.repository.ProductoRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -28,8 +30,22 @@ public class ConfiguracionInicial {
     }
 
     @Bean
-    CommandLineRunner iniciarBaseDeDatos(ProductoRepository productoRepository, BlogsRepository blogsRepository) {
+    CommandLineRunner iniciarBaseDeDatos(ProductoRepository productoRepository, BlogsRepository blogsRepository, ClienteRepository clienteRepository) {
         return args -> {
+
+            if (clienteRepository.count() == 0) {
+                System.out.println("Creando usuario por defecto...");
+                Cliente clienteDemo = new Cliente();
+                clienteDemo.setNombreCompleto("Sebastián");
+                clienteDemo.setEmail("seba@users.noreply.github.com");
+                clienteDemo.setContrasena("seba1234");
+                clienteDemo.setNumero("912345678");
+                clienteDemo.setDireccion("Calle Falsa 123");
+                clienteDemo.setRegion("Metropolitana");
+                clienteDemo.setComuna("Providencia");
+                clienteRepository.save(clienteDemo);
+                System.out.println("Usuario por defecto creado con éxito.");
+            }
 
             // ==========================================
             // PRECARGA DE ZAPATILLAS
@@ -82,26 +98,75 @@ public class ConfiguracionInicial {
                         new Blogs(null,
                                 "La historia de las Air Jordan 1",
                                 "Descubre cómo un par de zapatillas cambió el mundo del baloncesto.",
-                                "En 1985, Nike y Michael Jordan se unieron para crear una de las siluetas más icónicas de la historia. A pesar de las multas de la NBA por romper el código de vestimenta, las Jordan 1 se convirtieron en un fenómeno cultural que perdura hasta el día de hoy.",
+                                "En 1985, Nike y Michael Jordan se unieron para crear una de las siluetas más icónicas de la historia. A pesar de las multas de la NBA por romper el código de vestimenta, las Jordan 1 se convirtieron en un fenómeno cultural que perdura hasta el día de hoy. Lo que comenzó como un diseño enfocado en rendimiento terminó transformándose en un símbolo de estilo, identidad y cultura sneaker. Desde el clásico colorway Chicago hasta versiones premium y colaboraciones exclusivas, la Jordan 1 sigue siendo un referente para coleccionistas, deportistas y amantes del streetwear.",
                                 "https://static.nike.com/a/images/f_auto,cs_srgb/w_1920,c_limit/89c121fc-3d07-4de0-aef6-bcc9c2764a2c/air-jordan-1-2022-lost-and-found-chicago-la-inspiraci%C3%B3n-detr%C3%A1s-del-dise%C3%B1o.jpg"),
 
                         new Blogs(null,
                                 "Cómo cuidar tus sneakers",
                                 "Tips y trucos para mantener tus zapatillas como nuevas.",
-                                "Mantener tus zapatillas limpias es fundamental para que duren más tiempo. Recuerda usar cepillos de cerdas suaves, productos de limpieza específicos para cada material (cuero, gamuza, tela) y nunca, jamás, meterlas a la lavadora o secadora.",
+                                "Mantener tus zapatillas limpias es fundamental para que duren más tiempo. Recuerda usar cepillos de cerdas suaves, productos de limpieza específicos para cada material (cuero, gamuza, tela) y nunca, jamás, meterlas a la lavadora o secadora. Además, es importante dejar que se sequen a temperatura ambiente, lejos de fuentes de calor directo, y protegerlas con un spray impermeabilizante si las usas con frecuencia. Un cuidado constante no solo prolonga su vida útil, también preserva el color, la estructura y el valor de cada par.",
                                 "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=600&q=80"),
 
                         new Blogs(null,
                                 "Lanzamientos más esperados de este año",
                                 "El calendario definitivo para los amantes del streetwear.",
-                                "Este año promete colaboraciones increíbles. Desde nuevas ediciones de J balvin retro 4 hasta los rediseños clásicos de Nike Dunk y Yeezy. Mantente atento a nuestras redes para las fechas exactas de lanzamiento en nuestra tienda.",
-                                "https://cdn.shopify.com/s/files/1/0631/6644/7787/files/Screenshot_106_2048x2048.png?v=1781704062")
+                                "Este año promete colaboraciones increíbles. Desde nuevas ediciones de Nike Dunk y Air Max hasta proyectos especiales con artistas y atletas de renombre. Para muchos aficionados, el verdadero reto es no perderse los drops más exclusivos, porque cada lanzamiento trae consigo una mezcla de historia, diseño y comunidad sneaker. Si te gusta seguir cada noticia, es clave estar atento a fechas de lanzamiento, rumores y stock en tiendas oficiales y boutiques selectas.",
+                                "https://cdn.shopify.com/s/files/1/0631/6644/7787/files/Screenshot_106_2048x2048.png?v=1781704062"),
 
+                        new Blogs(null,
+                                "Las mejores siluetas para vestir casual",
+                                "Encuentra el equilibrio perfecto entre comodidad y estilo.",
+                                "Cuando se trata de outfits casuales, las zapatillas son la pieza clave que define toda la estética. Siluetas como las Nike Air Force 1, New Balance 550 y Adidas Samba han conquistado la moda contemporánea porque combinan sencillez, versatilidad y una cultura visual muy fuerte. Están pensadas para acompañar jeans, cargos, joggers y looks más elegantes sin perder la comodidad del día a día.",
+                                "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1200&q=80"),
 
+                        new Blogs(null,
+                                "Cómo elegir el tamaño ideal para tus sneakers",
+                                "Evita errores comunes al comprar online.",
+                                "Elegir la talla correcta puede ser la diferencia entre una compra memorable y una experiencia frustrante. Cada marca tiene una forma distinta de calzar, y además hay diferencias según el material, la suela y la estructura del empeine. Una buena práctica es medir tu pie al final del día, leer la guía de tallas del fabricante y, si es posible, comparar con un par que ya tengas. Además, algunos modelos requieren un ajuste más holgado o más ceñido según tu estilo de uso.",
+                                "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=1200&q=80"),
 
+                        new Blogs(null,
+                                "Air Max: la evolución del estilo urbano",
+                                "Descubre por qué esta silueta sigue siendo un clásico.",
+                                "La Nike Air Max se convirtió en una referencia del sneaker culture por su innovación visual y su comodidad. Con su cámara de aire visible, no solo aportó un avance técnico, sino también una identidad estética única que se volvió imposible de ignorar. A lo largo de los años, la familia Air Max ha explorado colorways, materiales y colaboraciones que la mantienen vigente entre amantes del streetwear y atletas casuales.",
+                                "https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&w=1200&q=80"),
 
+                        new Blogs(null,
+                                "Sneakers premium: ¿merece la pena invertir en una buena pareja?",
+                                "La calidad, el confort y la duración tienen valor real.",
+                                "Aunque un par más económico puede cumplir su función, las zapatillas premium suelen ofrecer mejor construcción, materiales más resistentes y una experiencia de uso más cuidada. Esto se nota en la suela, la amortiguación, el encaje y la apariencia general. Si buscas invertir en una silueta que te acompañe por años, vale la pena analizar no solo el precio, sino también la calidad del diseño y la comodidad a largo plazo.",
+                                "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=1200&q=80"),
 
-                        );
+                        new Blogs(null,
+                                "El auge de la cultura sneaker en Latinoamérica",
+                                "Cómo la moda urbana se volvió un fenómeno global.",
+                                "La cultura sneaker ha crecido de manera exponencial en toda Latinoamérica, donde el interés por marcas, ediciones exclusivas y estilo personal se consolida cada año. Lo que antes era un nicho se convirtió en una comunidad activa, con tiendas, resellers y coleccionistas que siguen cada lanzamiento con atención. Este fenómeno refleja una conexión profunda entre moda, música, deporte y expresión personal, y demuestra que las zapatillas dejan de ser un simple calzado para convertirse en una forma de identidad.",
+                                "https://images.unsplash.com/photo-1511556820780-d912e42b4980?auto=format&fit=crop&w=1200&q=80"),
+
+                        new Blogs(null,
+                                "Nike vs Adidas: ¿cuál marca encaja mejor contigo?",
+                                "Un análisis simple para elegir según tu estilo y necesidades.",
+                                "Elegir entre Nike y Adidas depende tanto del estilo como del propósito del calzado. Nike suele destacar por su innovación técnica, sus cortes mínimos y su enfoque en rendimiento y streetwear. Adidas, por su parte, ha ganado fuerza por su estética retro, sus colaboraciones y la versatilidad de su catálogo. Lo importante es identificar qué te importa más: comodidad, diseño, performance o moda urbana. Conocer tus prioridades hace más fácil elegir la marca ideal.",
+                                "https://images.unsplash.com/photo-1605348532760-6753d2c43329?auto=format&fit=crop&w=1200&q=80"),
+
+                        new Blogs(null,
+                                "Qué tienen en común los sneakers de colección",
+                                "Más allá del valor: diseño, historia y rareza.",
+                                "Los sneakers de colección no se venden solo por su valor monetario; se valoran por su historia, su cronología y la forma en que representan una época. Muchas siluetas exclusivas se vuelven objetos de deseo por la combinación de materiales, campañas, ediciones limitadas y su relación con la cultura pop. Para los coleccionistas, cada par es una pieza única que cuenta una historia y refleja la evolución del estilo dentro del mercado sneaker.",
+                                "https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=1200&q=80"),
+
+                        new Blogs(null,
+                                "La importancia de la suela en la comodidad",
+                                "No subestimes este detalle cuando compras zapatillas.",
+                                "La suela es una de las partes más importantes para la comodidad diaria. Determina la amortiguación, la tracción, la estabilidad y la sensación que tendrás al caminar o correr. Algunos modelos priorizan capas más flexibles y suaves, mientras que otros trabajan con unidades más altas y resistentes para un mejor rendimiento. Entender la diferencia entre suelas y tecnologías de amortiguación puede ayudarte a elegir un modelo que se adapte mejor a tu estilo de vida y uso.",
+                                "https://images.unsplash.com/photo-1543508282-6319a3e2621f?auto=format&fit=crop&w=1200&q=80"),
+
+                        new Blogs(null,
+                                "Cómo armar un outfit con zapatillas statement",
+                                "Haz que tus sneakers sean el centro de atención sin perder equilibrio.",
+                                "Cuando eliges una sneaker más audaz, el resto del outfit debe ser más sobrio para que el zapato tome protagonismo sin saturar la imagen. Una buena estrategia es combinar tonos neutros, prendas con cortes sencillos y accesorios minimalistas. De esta manera, la silueta destacada puede verse como un punto focal claro y al mismo tiempo mantener una estética equilibrada y moderna. La clave está en controlar el resto del look para que la protagonista sea la calzado.",
+                                "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1200&q=80")
+                );
 
                 blogsRepository.saveAll(posts);
                 System.out.println("¡Blogs precargados con éxito!");
