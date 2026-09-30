@@ -10,6 +10,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.Table;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -38,8 +40,12 @@ public class Producto {
     @Column(name = "link_imagen")
     private String linkImagen;
 
-    @Column(name = "tipo_categoria")
+    @Transient
     private String tipoCategoria;
+
+    @ManyToOne
+    @JoinColumn(name = "categoria_id")
+    private Categoria categoria;
 
     @ElementCollection
     @CollectionTable(

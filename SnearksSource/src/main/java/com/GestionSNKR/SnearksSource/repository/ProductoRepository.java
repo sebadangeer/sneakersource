@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
 
-        // Método derivado para buscar productos por categoría exacta
-        List<Producto> findByTipoCategoriaIgnoreCase(String tipoCategoria);
+        // Método derivado para buscar productos por nombre de categoría
+        List<Producto> findByCategoriaNombreIgnoreCase(String nombre);
     }
