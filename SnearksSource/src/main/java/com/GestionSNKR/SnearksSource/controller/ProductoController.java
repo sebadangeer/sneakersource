@@ -1,7 +1,7 @@
 package com.GestionSNKR.SnearksSource.controller;
 
-import com.GestionSNKR.SnearksSource.model.Producto;
-import com.GestionSNKR.SnearksSource.service.ProductoService;
+import com.GestionSNKR.SneaksSource.model.Producto;
+import com.GestionSNKR.SneaksSource.service.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +25,13 @@ public class ProductoController {
     @GetMapping
     public ResponseEntity<List<Producto>> obtenerTodos() {
         List<Producto> productos = productoService.obtenerTodos();
+        return ResponseEntity.ok(productos);
+    }
+
+    // Endpoint genérico para obtener productos por nombre de categoría
+    @GetMapping("/categoria/{nombre}")
+    public ResponseEntity<List<Producto>> obtenerPorCategoria(@PathVariable String nombre) {
+        List<Producto> productos = productoService.obtenerPorCategoria(nombre);
         return ResponseEntity.ok(productos);
     }
 
