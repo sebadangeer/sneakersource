@@ -21,4 +21,10 @@ public class Categoria {
 
     @Column(name = "nombre", unique = true)
     private String nombre;
+
+    @Column(name = "descripcion_categoria")
+    private String descripcionCategoria;
+
+    @Column(name = "imagen_categoria")
+    private String imagenCategoria;
 }

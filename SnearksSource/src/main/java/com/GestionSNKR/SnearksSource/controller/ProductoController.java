@@ -1,7 +1,7 @@
 package com.GestionSNKR.SnearksSource.controller;
 
-import com.GestionSNKR.SneaksSource.model.Producto;
-import com.GestionSNKR.SneaksSource.service.ProductoService;
+import com.GestionSNKR.SnearksSource.model.Producto;
+import com.GestionSNKR.SnearksSource.service.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

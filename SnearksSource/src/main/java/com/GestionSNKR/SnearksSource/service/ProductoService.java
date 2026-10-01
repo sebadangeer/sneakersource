@@ -1,9 +1,11 @@
 package com.GestionSNKR.SnearksSource.service;
 
-import com.GestionSNKR.SnearksSource.model.Producto;
 import com.GestionSNKR.SnearksSource.model.Categoria;
-import com.GestionSNKR.SnearksSource.repository.ProductoRepository;
+import com.GestionSNKR.SnearksSource.model.Producto;
+import com.GestionSNKR.SnearksSource.model.TipoCategoria;
 import com.GestionSNKR.SnearksSource.repository.CategoriaRepository;
+import com.GestionSNKR.SnearksSource.repository.ProductoRepository;
+import com.GestionSNKR.SnearksSource.repository.TipoCategoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +17,13 @@ public class ProductoService {
 
     private final ProductoRepository productoRepository;
     private final CategoriaRepository categoriaRepository;
+    private final TipoCategoriaRepository tipoCategoriaRepository;
 
     @Autowired
-    public ProductoService(ProductoRepository productoRepository, CategoriaRepository categoriaRepository) {
+    public ProductoService(ProductoRepository productoRepository, CategoriaRepository categoriaRepository, TipoCategoriaRepository tipoCategoriaRepository) {
         this.productoRepository = productoRepository;
         this.categoriaRepository = categoriaRepository;
+        this.tipoCategoriaRepository = tipoCategoriaRepository;
     }
 
     // Obtener todos los productos
@@ -37,10 +41,24 @@ public class ProductoService {
         return productoRepository.findById(id);
     }
 
+    private TipoCategoria resolverTipoCategoria(String nombre) {
+        if (nombre == null || nombre.isBlank()) {
+            return null;
+        }
+
+        String nombreNormalizado = nombre.trim();
+        return tipoCategoriaRepository.findByNombreIgnoreCase(nombreNormalizado)
+                .orElseGet(() -> tipoCategoriaRepository.save(new TipoCategoria(nombreNormalizado)));
+    }
+
     // Guardar un nuevo producto
     public Producto guardarProducto(Producto producto) {
+        if (producto.getTipoCategoria() == null && producto.getTipoCategoriaNombre() != null) {
+            producto.setTipoCategoria(resolverTipoCategoria(producto.getTipoCategoriaNombre()));
+        }
+
         if (producto.getCategoria() == null && producto.getTipoCategoria() != null) {
-            String nombre = producto.getTipoCategoria().trim();
+            String nombre = producto.getTipoCategoria().getNombre();
             Categoria cat = categoriaRepository.findByNombreIgnoreCase(nombre)
                     .orElseGet(() -> {
                         Categoria nueva = new Categoria();
@@ -59,11 +77,21 @@ public class ProductoService {
             producto.setPrecio(productoDetalles.getPrecio());
             producto.setDescripcion(productoDetalles.getDescripcion());
             producto.setLinkImagen(productoDetalles.getLinkImagen());
-            // Manejar categoria por nombre o por objeto
             if (productoDetalles.getCategoria() != null) {
                 producto.setCategoria(productoDetalles.getCategoria());
             } else if (productoDetalles.getTipoCategoria() != null) {
-                String nombre = productoDetalles.getTipoCategoria().trim();
+                producto.setTipoCategoria(productoDetalles.getTipoCategoria());
+                String nombre = productoDetalles.getTipoCategoria().getNombre();
+                Categoria cat = categoriaRepository.findByNombreIgnoreCase(nombre)
+                        .orElseGet(() -> {
+                            Categoria nueva = new Categoria();
+                            nueva.setNombre(nombre);
+                            return categoriaRepository.save(nueva);
+                        });
+                producto.setCategoria(cat);
+            } else if (productoDetalles.getTipoCategoriaNombre() != null) {
+                producto.setTipoCategoria(resolverTipoCategoria(productoDetalles.getTipoCategoriaNombre()));
+                String nombre = producto.getTipoCategoria().getNombre();
                 Categoria cat = categoriaRepository.findByNombreIgnoreCase(nombre)
                         .orElseGet(() -> {
                             Categoria nueva = new Categoria();

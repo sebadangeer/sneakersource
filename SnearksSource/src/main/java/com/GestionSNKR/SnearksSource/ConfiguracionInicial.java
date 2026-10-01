@@ -1,11 +1,15 @@
 package com.GestionSNKR.SnearksSource; // Ajusta el paquete si lo moviste a config
 
 import com.GestionSNKR.SnearksSource.model.Blogs;
+import com.GestionSNKR.SnearksSource.model.Categoria;
 import com.GestionSNKR.SnearksSource.model.Cliente;
 import com.GestionSNKR.SnearksSource.model.Producto;
+import com.GestionSNKR.SnearksSource.model.TipoCategoria;
 import com.GestionSNKR.SnearksSource.repository.BlogsRepository;
+import com.GestionSNKR.SnearksSource.repository.CategoriaRepository;
 import com.GestionSNKR.SnearksSource.repository.ClienteRepository;
 import com.GestionSNKR.SnearksSource.repository.ProductoRepository;
+import com.GestionSNKR.SnearksSource.repository.TipoCategoriaRepository;
 import com.GestionSNKR.SnearksSource.service.BoletaService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -31,7 +35,11 @@ public class ConfiguracionInicial {
     }
 
     @Bean
-    CommandLineRunner iniciarBaseDeDatos(ProductoRepository productoRepository, BlogsRepository blogsRepository, ClienteRepository clienteRepository) {
+    CommandLineRunner iniciarBaseDeDatos(ProductoRepository productoRepository,
+                                        BlogsRepository blogsRepository,
+                                        ClienteRepository clienteRepository,
+                                        CategoriaRepository categoriaRepository,
+                                        TipoCategoriaRepository tipoCategoriaRepository) {
         return args -> {
 
             if (clienteRepository.count() == 0) {
@@ -81,6 +89,21 @@ public class ConfiguracionInicial {
                                 new Producto(null, 149990, "Air Max 1", "El modelo pionero de la cápsula de aire visible con una mezcla elegante de malla y gamuza.", "img/urban/air.png", "Nike Urbano", Map.of("38", 5, "39", 8, "40", 10, "41", 6)),
                                 new Producto(null, 84990, "Air Max Plus Tn", "Impulsa tu actitud con el Nike Air Max Plus, una experiencia Air optimizada que ofrece una estabilidad premium y una amortiguación increíble", "img/urban/tn.png", "Nike Urbano", Map.of("39", 8, "40", 12, "41", 10, "42", 6))
                 );
+
+                for (Producto producto : zapatillas) {
+                    String nombreTipo = producto.getTipoCategoriaNombre();
+                    if (nombreTipo != null && !nombreTipo.isBlank()) {
+                        TipoCategoria tipoCategoria = tipoCategoriaRepository.findByNombreIgnoreCase(nombreTipo)
+                                .orElseGet(() -> tipoCategoriaRepository.save(new TipoCategoria(nombreTipo)));
+                        producto.setTipoCategoria(tipoCategoria);
+
+                        Categoria categoria = categoriaRepository.findByNombreIgnoreCase(nombreTipo)
+                                .orElseGet(() -> categoriaRepository.save(new Categoria()));
+                        categoria.setNombre(nombreTipo);
+                        categoriaRepository.save(categoria);
+                        producto.setCategoria(categoria);
+                    }
+                }
 
                 productoRepository.saveAll(zapatillas);
                 System.out.println("¡Zapatillas precargadas con éxito!");
