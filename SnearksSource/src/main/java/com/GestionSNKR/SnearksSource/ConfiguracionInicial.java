@@ -94,7 +94,7 @@ public class ConfiguracionInicial {
                     String nombreTipo = producto.getTipoCategoriaNombre();
                     if (nombreTipo != null && !nombreTipo.isBlank()) {
                         TipoCategoria tipoCategoria = tipoCategoriaRepository.findByNombreIgnoreCase(nombreTipo)
-                                .orElseGet(() -> tipoCategoriaRepository.save(new TipoCategoria(nombreTipo)));
+                                .orElseGet(() -> tipoCategoriaRepository.save(new TipoCategoria(nombreTipo, "Tipo de categoría " + nombreTipo, "")));
                         producto.setTipoCategoria(tipoCategoria);
 
                         Categoria categoria = categoriaRepository.findByNombreIgnoreCase(nombreTipo)
