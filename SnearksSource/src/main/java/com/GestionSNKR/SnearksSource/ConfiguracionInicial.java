@@ -1,11 +1,14 @@
 package com.GestionSNKR.SnearksSource; // Ajusta el paquete si lo moviste a config
 
 import com.GestionSNKR.SnearksSource.model.Blogs;
+import com.GestionSNKR.SnearksSource.model.Boleta;
 import com.GestionSNKR.SnearksSource.model.Categoria;
 import com.GestionSNKR.SnearksSource.model.Cliente;
+import com.GestionSNKR.SnearksSource.model.ItemCarrito;
 import com.GestionSNKR.SnearksSource.model.Producto;
 import com.GestionSNKR.SnearksSource.model.TipoCategoria;
 import com.GestionSNKR.SnearksSource.repository.BlogsRepository;
+import com.GestionSNKR.SnearksSource.repository.BoletaRepository;
 import com.GestionSNKR.SnearksSource.repository.CategoriaRepository;
 import com.GestionSNKR.SnearksSource.repository.ClienteRepository;
 import com.GestionSNKR.SnearksSource.repository.ProductoRepository;
@@ -15,6 +18,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +43,8 @@ public class ConfiguracionInicial {
                                         BlogsRepository blogsRepository,
                                         ClienteRepository clienteRepository,
                                         CategoriaRepository categoriaRepository,
-                                        TipoCategoriaRepository tipoCategoriaRepository) {
+                                        TipoCategoriaRepository tipoCategoriaRepository,
+                                        BoletaRepository boletaRepository) {
         return args -> {
 
             if (clienteRepository.count() == 0) {
@@ -54,6 +59,29 @@ public class ConfiguracionInicial {
                 clienteDemo.setComuna("Providencia");
                 clienteRepository.save(clienteDemo);
                 System.out.println("Usuario por defecto creado con éxito.");
+            }
+
+            if (boletaRepository.count() == 0) {
+                System.out.println("Creando boletas de ejemplo para el dashboard...");
+                Cliente clienteDemo = clienteRepository.findAll().stream().findFirst().orElse(null);
+                if (clienteDemo != null) {
+                    List<Boleta> boletasDemo = List.of(
+                            crearBoletaDemo(clienteDemo, "2026-10-01T10:30:00", "Efectivo", "Calle Falsa 123, Providencia", List.of(
+                                    new ItemCarrito(1L, 1L, "Air Jordan Retro 1", 1, 149000.0, "39"),
+                                    new ItemCarrito(2L, 2L, "Air Jordan Retro 4", 1, 175000.0, "40")
+                            )),
+                            crearBoletaDemo(clienteDemo, "2026-10-05T16:45:00", "Tarjeta", "Av. Siempre Viva 742, Santiago", List.of(
+                                    new ItemCarrito(3L, 3L, "Mercurial Vapor 16", 2, 149000.0, "41"),
+                                    new ItemCarrito(4L, 4L, "Air Max 90", 1, 139990.0, "40")
+                            )),
+                            crearBoletaDemo(clienteDemo, "2026-10-09T12:15:00", "WebPay", "Pasaje Los Pinos 55, Las Condes", List.of(
+                                    new ItemCarrito(5L, 5L, "Nike Blazer Mid", 1, 99990.0, "38"),
+                                    new ItemCarrito(6L, 6L, "Air Max Plus", 1, 84990.0, "39")
+                            ))
+                    );
+                    boletaRepository.saveAll(boletasDemo);
+                    System.out.println("Boletas de ejemplo creadas con éxito.");
+                }
             }
 
             // ==========================================
@@ -196,6 +224,19 @@ public class ConfiguracionInicial {
                 System.out.println("¡Blogs precargados con éxito!");
             }
         };
+    }
+
+    private Boleta crearBoletaDemo(Cliente cliente, String fechaIso, String metodoPago, String direccion, List<ItemCarrito> items) {
+        Boleta boleta = new Boleta();
+        boleta.setCliente(cliente);
+        boleta.setItems(items);
+        boleta.setMetodoPago(metodoPago);
+        boleta.setDireccion(direccion);
+        boleta.setFecha(LocalDateTime.parse(fechaIso));
+        boleta.setEstado("CREADA");
+        boleta.setImpuestos(0.0);
+        boleta.calcularTotal();
+        return boleta;
     }
 
     @Bean

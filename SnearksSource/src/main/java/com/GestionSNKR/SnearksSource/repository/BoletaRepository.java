@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface BoletaRepository extends JpaRepository<Boleta, Long> {
     List<Boleta> findByClienteId(Long clienteId);
+    List<Boleta> findAllByOrderByFechaDesc();
 }

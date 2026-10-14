@@ -202,6 +202,10 @@ public class BoletaService {
         }
     }
 
+    public List<Boleta> listarTodas() {
+        return boletaRepository.findAllByOrderByFechaDesc();
+    }
+
     public List<Boleta> listarPorCliente(Long clienteId) {
         return boletaRepository.findByClienteId(clienteId);
     }
@@ -210,5 +214,10 @@ public class BoletaService {
         return boletaRepository.findById(boletaId)
                 .filter(b -> b.getCliente() != null && b.getCliente().getId().equals(clienteId))
                 .orElseThrow(() -> new IllegalArgumentException("Boleta no encontrada para ese cliente."));
+    }
+
+    public Boleta obtenerPorId(Long boletaId) {
+        return boletaRepository.findById(boletaId)
+                .orElseThrow(() -> new IllegalArgumentException("Boleta no encontrada."));
     }
 }
