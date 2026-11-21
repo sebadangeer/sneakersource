@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/productos")
-@CrossOrigin(origins = "*") // Permite peticiones desde el frontend (JS local/fetch)
 public class ProductoController {
 
     private final ProductoService productoService;

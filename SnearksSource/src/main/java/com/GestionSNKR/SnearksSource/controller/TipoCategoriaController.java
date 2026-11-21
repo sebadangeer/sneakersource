@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tipos-categoria")
-@CrossOrigin(origins = "*")
 public class TipoCategoriaController {
 
     private final TipoCategoriaRepository tipoCategoriaRepository;

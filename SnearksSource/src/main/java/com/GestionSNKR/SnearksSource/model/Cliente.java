@@ -25,10 +25,17 @@ public class Cliente {
     @JsonProperty("nombreCompleto")
     private String nombreCompleto;
 
-    @Column(name = "email", length = 100)
+    @Column(name = "email", length = 100, unique = true)
     private String email;
 
-    @Column(name = "contrasena", length = 10)
+    @Column(name = "google_sub", length = 255, unique = true)
+    private String googleSub;
+
+    @Column(name = "rol", length = 20, nullable = false)
+    private String rol = "CLIENTE";
+
+    @Column(name = "contrasena", length = 100)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String contrasena;
 
     @Column(name = "numero", length = 9)

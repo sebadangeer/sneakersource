@@ -2,6 +2,7 @@ package com.GestionSNKR.SnearksSource.service;
 
 import com.GestionSNKR.SnearksSource.model.Cliente;
 import com.GestionSNKR.SnearksSource.repository.ClienteRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Optional;
 public class ClienteService {
 
     private final ClienteRepository repo;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public ClienteService(ClienteRepository repo) {
         this.repo = repo;
@@ -20,12 +22,34 @@ public class ClienteService {
 
     public Optional<Cliente> findById(Long id) { return repo.findById(id); }
 
-    public Cliente save(Cliente c) { return repo.save(c); }
+    public Cliente save(Cliente c) {
+        normalizeDefaults(c);
+        hashPasswordIfNeeded(c);
+        return repo.save(c);
+    }
 
     public Cliente update(Long id, Cliente c) {
-        // Ensure the entity id matches the path id before saving
         c.setId(id);
+        normalizeDefaults(c);
+        hashPasswordIfNeeded(c);
         return repo.save(c);
+    }
+
+    private void normalizeDefaults(Cliente cliente) {
+        if (cliente.getRol() == null || cliente.getRol().isBlank()) {
+            cliente.setRol("CLIENTE");
+        } else {
+            cliente.setRol(cliente.getRol().trim().toUpperCase());
+        }
+    }
+
+    private void hashPasswordIfNeeded(Cliente cliente) {
+        String password = cliente.getContrasena();
+        if (password != null && !password.isBlank()
+                && !password.startsWith("$2a$") && !password.startsWith("$2b$")
+                && !password.startsWith("$2y$")) {
+            cliente.setContrasena(passwordEncoder.encode(password));
+        }
     }
 
     public void deleteById(Long id) { repo.deleteById(id); }
@@ -44,8 +68,17 @@ public class ClienteService {
         }
 
         Cliente cliente = clienteOpt.get();
-        if (!cliente.getContrasena().equals(contrasena)) {
-            System.out.println("DEBUG: La contraseña no coincide. Recibida: " + contrasena + " | En BD: " + cliente.getContrasena());
+        if (cliente.getContrasena() == null) {
+            return Optional.empty();
+        }
+
+        boolean matches;
+        if (cliente.getContrasena().startsWith("$2") ) {
+            matches = passwordEncoder.matches(contrasena, cliente.getContrasena());
+        } else {
+            matches = cliente.getContrasena().equals(contrasena);
+        }
+        if (!matches) {
             return Optional.empty();
         }
 
