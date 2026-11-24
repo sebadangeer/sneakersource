@@ -1,0 +1,103 @@
+Project SnearkSource {
+  database_type: 'H2'
+  Note: 'Modelo basado en las entidades JPA del proyecto. Los nombres de columnas de colecciones embebidas reflejan la estrategia habitual de nombres snake_case de Hibernate.'
+}
+
+Table cliente {
+  id bigint [pk, increment]
+  nombre_completo varchar(150) [not null]
+  email varchar(100) [unique]
+  google_sub varchar(255) [unique]
+  rol varchar(20) [not null, default: 'CLIENTE']
+  contrasena varchar(100)
+  numero varchar(9)
+  direccion varchar(200)
+  region varchar(100)
+  comuna varchar(100)
+}
+
+Table carrito {
+  id bigint [pk, increment]
+  cliente_id bigint [unique]
+  subtotal double
+  impuestos double
+  total double
+  estado varchar
+  fecha_creacion datetime
+  fecha_ultima_modificacion datetime
+}
+
+Table carrito_items {
+  carrito_id bigint [not null]
+  id bigint
+  producto_id bigint [not null, note: 'Relación conceptual con el producto agregado al carrito']
+  nombre_producto varchar
+  cantidad int
+  precio_unitario double
+  talla varchar
+}
+
+Table boleta {
+  id bigint [pk, increment]
+  cliente_id bigint
+  subtotal double
+  impuestos double
+  total double
+  fecha datetime
+  metodo_pago varchar
+  direccion varchar
+  estado varchar
+}
+
+Table boleta_items {
+  boleta_id bigint [not null]
+  id bigint
+  producto_id bigint [note: 'Relación conceptual con el producto comprado; puede conservarse aunque el producto se elimine']
+  nombre_producto varchar
+  cantidad int
+  precio_unitario double
+  talla varchar
+}
+
+Table producto {
+  id bigint [pk, increment]
+  precio int
+  nombre_modelo varchar
+  descripcion varchar(600)
+  link_imagen varchar
+  tipo_categoria_id bigint
+}
+
+Table producto_tallas {
+  producto_id bigint [not null]
+  talla varchar [not null]
+  cantidad int
+
+  indexes {
+    (producto_id, talla) [pk]
+  }
+}
+
+Table tipo_categoria {
+  id bigint [pk, increment]
+  nombre varchar [not null, unique]
+  descripcion varchar [not null, default: '']
+  imagen varchar [not null, default: '']
+}
+
+Table blogs {
+  id_posteo bigint [pk, increment]
+  nombre_post varchar(250) [not null]
+  descripcion_post varchar(100)
+  contenido_post varchar(2000)
+  link_imagen_post varchar(250)
+}
+
+Ref: carrito.cliente_id - cliente.id
+Ref: carrito_items.carrito_id > carrito.id
+Ref: carrito_items.producto_id > producto.id
+Ref: boleta.cliente_id > cliente.id
+Ref: boleta_items.boleta_id > boleta.id
+Ref: boleta_items.producto_id > producto.id
+Ref: producto.tipo_categoria_id > tipo_categoria.id
+Ref: producto_tallas.producto_id > producto.id
