@@ -1,9 +1,7 @@
 package com.GestionSNKR.SnearksSource.service;
 
-import com.GestionSNKR.SnearksSource.model.Categoria;
 import com.GestionSNKR.SnearksSource.model.Producto;
 import com.GestionSNKR.SnearksSource.model.TipoCategoria;
-import com.GestionSNKR.SnearksSource.repository.CategoriaRepository;
 import com.GestionSNKR.SnearksSource.repository.ProductoRepository;
 import com.GestionSNKR.SnearksSource.repository.TipoCategoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +14,11 @@ import java.util.Optional;
 public class ProductoService {
 
     private final ProductoRepository productoRepository;
-    private final CategoriaRepository categoriaRepository;
     private final TipoCategoriaRepository tipoCategoriaRepository;
 
     @Autowired
-    public ProductoService(ProductoRepository productoRepository, CategoriaRepository categoriaRepository, TipoCategoriaRepository tipoCategoriaRepository) {
+    public ProductoService(ProductoRepository productoRepository, TipoCategoriaRepository tipoCategoriaRepository) {
         this.productoRepository = productoRepository;
-        this.categoriaRepository = categoriaRepository;
         this.tipoCategoriaRepository = tipoCategoriaRepository;
     }
 
@@ -31,9 +27,9 @@ public class ProductoService {
         return productoRepository.findAll();
     }
 
-    // Obtener productos filtrados por categoría (por nombre de categoria)
-    public List<Producto> obtenerPorCategoria(String categoria) {
-        return productoRepository.findByCategoriaNombreIgnoreCase(categoria);
+    // Obtener productos filtrados por tipo de categoría
+    public List<Producto> obtenerPorTipoCategoria(String tipoCategoria) {
+        return productoRepository.findByTipoCategoriaNombreIgnoreCase(tipoCategoria);
     }
 
     // Obtener un producto por ID
@@ -56,17 +52,6 @@ public class ProductoService {
         if (producto.getTipoCategoria() == null && producto.getTipoCategoriaNombre() != null) {
             producto.setTipoCategoria(resolverTipoCategoria(producto.getTipoCategoriaNombre()));
         }
-
-        if (producto.getCategoria() == null && producto.getTipoCategoria() != null) {
-            String nombre = producto.getTipoCategoria().getNombre();
-            Categoria cat = categoriaRepository.findByNombreIgnoreCase(nombre)
-                    .orElseGet(() -> {
-                        Categoria nueva = new Categoria();
-                        nueva.setNombre(nombre);
-                        return categoriaRepository.save(nueva);
-                    });
-            producto.setCategoria(cat);
-        }
         return productoRepository.save(producto);
     }
 
@@ -77,28 +62,10 @@ public class ProductoService {
             producto.setPrecio(productoDetalles.getPrecio());
             producto.setDescripcion(productoDetalles.getDescripcion());
             producto.setLinkImagen(productoDetalles.getLinkImagen());
-            if (productoDetalles.getCategoria() != null) {
-                producto.setCategoria(productoDetalles.getCategoria());
-            } else if (productoDetalles.getTipoCategoria() != null) {
-                producto.setTipoCategoria(productoDetalles.getTipoCategoria());
-                String nombre = productoDetalles.getTipoCategoria().getNombre();
-                Categoria cat = categoriaRepository.findByNombreIgnoreCase(nombre)
-                        .orElseGet(() -> {
-                            Categoria nueva = new Categoria();
-                            nueva.setNombre(nombre);
-                            return categoriaRepository.save(nueva);
-                        });
-                producto.setCategoria(cat);
+            if (productoDetalles.getTipoCategoria() != null) {
+                producto.setTipoCategoria(resolverTipoCategoria(productoDetalles.getTipoCategoria().getNombre()));
             } else if (productoDetalles.getTipoCategoriaNombre() != null) {
                 producto.setTipoCategoria(resolverTipoCategoria(productoDetalles.getTipoCategoriaNombre()));
-                String nombre = producto.getTipoCategoria().getNombre();
-                Categoria cat = categoriaRepository.findByNombreIgnoreCase(nombre)
-                        .orElseGet(() -> {
-                            Categoria nueva = new Categoria();
-                            nueva.setNombre(nombre);
-                            return categoriaRepository.save(nueva);
-                        });
-                producto.setCategoria(cat);
             }
             producto.setTallasDisponibles(productoDetalles.getTallasDisponibles());
             return productoRepository.save(producto);

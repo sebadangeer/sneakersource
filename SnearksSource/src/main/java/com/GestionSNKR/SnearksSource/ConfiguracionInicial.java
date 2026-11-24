@@ -2,14 +2,12 @@ package com.GestionSNKR.SnearksSource; // Ajusta el paquete si lo moviste a conf
 
 import com.GestionSNKR.SnearksSource.model.Blogs;
 import com.GestionSNKR.SnearksSource.model.Boleta;
-import com.GestionSNKR.SnearksSource.model.Categoria;
 import com.GestionSNKR.SnearksSource.model.Cliente;
 import com.GestionSNKR.SnearksSource.model.ItemCarrito;
 import com.GestionSNKR.SnearksSource.model.Producto;
 import com.GestionSNKR.SnearksSource.model.TipoCategoria;
 import com.GestionSNKR.SnearksSource.repository.BlogsRepository;
 import com.GestionSNKR.SnearksSource.repository.BoletaRepository;
-import com.GestionSNKR.SnearksSource.repository.CategoriaRepository;
 import com.GestionSNKR.SnearksSource.repository.ClienteRepository;
 import com.GestionSNKR.SnearksSource.repository.ProductoRepository;
 import com.GestionSNKR.SnearksSource.repository.TipoCategoriaRepository;
@@ -42,7 +40,6 @@ public class ConfiguracionInicial {
     CommandLineRunner iniciarBaseDeDatos(ProductoRepository productoRepository,
                                         BlogsRepository blogsRepository,
                                         ClienteRepository clienteRepository,
-                                        CategoriaRepository categoriaRepository,
                                         TipoCategoriaRepository tipoCategoriaRepository,
                                         BoletaRepository boletaRepository) {
         return args -> {
@@ -124,12 +121,6 @@ public class ConfiguracionInicial {
                         TipoCategoria tipoCategoria = tipoCategoriaRepository.findByNombreIgnoreCase(nombreTipo)
                                 .orElseGet(() -> tipoCategoriaRepository.save(new TipoCategoria(nombreTipo, "Tipo de categoría " + nombreTipo, "")));
                         producto.setTipoCategoria(tipoCategoria);
-
-                        Categoria categoria = categoriaRepository.findByNombreIgnoreCase(nombreTipo)
-                                .orElseGet(() -> categoriaRepository.save(new Categoria()));
-                        categoria.setNombre(nombreTipo);
-                        categoriaRepository.save(categoria);
-                        producto.setCategoria(categoria);
                     }
                 }
 

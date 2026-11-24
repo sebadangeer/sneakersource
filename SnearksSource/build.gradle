@@ -23,6 +23,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'com.google.api-client:google-api-client:2.7.2'
 	implementation 'org.springframework.security:spring-security-crypto:6.5.5'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	// H2 in-memory database for development / tests
